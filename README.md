@@ -80,5 +80,19 @@ By utilizing MessagesPlaceholder and st.write_stream, the assistant provides a f
 
 ---
 
+## 🛠️ Upcoming Features (Roadmap)
+
+We are continuously working to improve the 3D-Housing RAG Copilot. Future updates will include:
+
+1. **Advanced Document Management Interface** * A dedicated sidebar section to list all indexed files in the `data/` directory.
+   * Functional "Delete" buttons to remove specific documents and their corresponding vectors from ChromaDB without resetting the entire database.
+
+2. **Source Citation & Traceability** * Implementing metadata extraction to show exactly which page and document the AI's response is derived from.
+   * Adding a "Sources" expander below each assistant response to enhance transparency and technical accuracy.
+
+3. **Multi-Session Support** * Allowing users to create and switch between different chat sessions stored as separate JSON files in the `chat_history/` folder.
+
+---
+
 ## 📝 License
 Distributed under the MIT License.

@@ -7,6 +7,11 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 CHROMA_DB_DIR = os.path.join(BASE_DIR, "chroma_db")
 CHAT_HISTORY_DIR = os.path.join(BASE_DIR, "chat_history")
 
+CHAT_HISTORY_FILE = os.path.join(CHAT_HISTORY_DIR, "default_chat.json")
+# Ensure the directory exists on startup
+if not os.path.exists(CHAT_HISTORY_DIR):
+    os.makedirs(CHAT_HISTORY_DIR)
+
 # 2. Model Configuration
 # Easily switch to a more powerful LLM in the future by changing these variables.
 LLM_BASE_URL = "http://localhost:11434"

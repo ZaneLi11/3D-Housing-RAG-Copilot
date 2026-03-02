@@ -2,6 +2,9 @@
 
 A professional RAG (Retrieval-Augmented Generation) assistant designed to analyze 3D-printed housing feasibility studies and technical reports. This project uses **Ollama** for local LLM inference and **ChromaDB** for high-performance vector storage.
 
+<img width="2940" height="1678" alt="3D Housing RAG Copilot" src="https://github.com/user-attachments/assets/2a663e54-d9b5-4b50-88f4-a345788d21f8" />
+
+
 ---
 
 ## 🌟 Key Features

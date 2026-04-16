@@ -1,98 +1,80 @@
-# 🏠 3D-Housing RAG Copilot
+# Personal Literature Research Assistant
 
-A professional RAG (Retrieval-Augmented Generation) assistant designed to analyze 3D-printed housing feasibility studies and technical reports. This project uses **Ollama** for local LLM inference and **ChromaDB** for high-performance vector storage.
+一个本地优先（local-first）的个人文献研究检索助手。  
+支持上传 PDF、建立向量索引、基于证据对话问答，并逐步构建长短期记忆。
 
-<img width="2940" height="1678" alt="3D Housing RAG Copilot" src="https://github.com/user-attachments/assets/2a663e54-d9b5-4b50-88f4-a345788d21f8" />
+## 已更新功能
+- PDF 文档上传与语义切分（`PyMuPDF + RecursiveCharacterTextSplitter`）
+- Chroma 向量检索（本地持久化）
+- 文档去重（MD5 指纹）
+- Streamlit 对话界面与会话持久化
+- 分级记忆（长短期记忆）
+  - 短期记忆（L0）：当前对话历史
+  - 会话摘要记忆（L1）：按消息阈值滚动更新
+  - 长期事实记忆（L2）：提取稳定事实并向量检索回注入
 
+## 本次更新内容（长短期记忆）
+- 新增 `core/memory_manager.py` 统一管理记忆读写逻辑
+- 在问答链路中接入 `memory_context`，回答时同时参考：
+  - 对话历史（L0）
+  - 会话摘要（L1）
+  - 长期事实（L2）
+  - 文档检索上下文（RAG）
+- 新增记忆参数（`config.py`）：
+  - `MEMORY_SUMMARY_INTERVAL_MESSAGES`
+  - `MEMORY_RETRIEVER_K`
+  - `MEMORY_MAX_FACTS_PER_UPDATE`
+- 新增会话重置时的记忆状态清理
 
----
+## 即将更新功能
+- RAG 重排序（Two-stage retrieval + reranker）
+- 文献来源追踪（文件名/页码/引用片段展示）
+- Tool 协议与 Skill 协议（可扩展任务编排）
+- 多会话管理（研究主题分组、会话切换）
+- 记忆质量控制（手动确认写入、记忆可视化与编辑）
+- 基础评测闭环（检索命中率、忠实度、相关性）
 
-## 🌟 Key Features
+## 技术栈
+- Python 3.10+
+- Streamlit
+- LangChain
+- Ollama（`deepseek-r1:8b`, `nomic-embed-text:v1.5`）
+- ChromaDB
 
-* **Intelligent Retrieval**: Uses `RecursiveCharacterTextSplitter` to maintain semantic integrity during document chunking.
-* **Smart Deduplication**: Implements **MD5 hashing** to prevent redundant document indexing, ensuring database efficiency.
-* **Persistent Memory**: Conversations are automatically saved to the `chat_history/` folder in JSON format, allowing users to resume sessions even after a restart.
-* **Streaming UI**: A modern, responsive chat interface built with Streamlit, featuring real-time "typewriter" style responses.
-* **Local & Private**: Runs 100% locally via Ollama—no data leaves your machine.
-
----
-
-## 🛠️ Tech Stack
-
-* **LLM Framework**: LangChain (LCEL)
-* **Inference Engine**: Ollama (Llama 3 / DeepSeek)
-* **Vector Database**: ChromaDB
-* **Frontend**: Streamlit
-* **Language**: Python 3.10+
-
----
-
-## 📂 Project Structure
-
+## 项目结构
 ```text
 .
-├── app.py                # Main Streamlit UI & Session Management
-├── config.py             # Global configurations, paths, and LLM settings
-├── core/
-│   ├── document_processor.py  # PDF loading and semantic text splitting
-│   ├── vector_store.py       # ChromaDB management & MD5 deduplication logic
-│   └── rag_chain.py          # LangChain LCEL & streaming response logic
-├── data/                 # Raw PDF storage (Local Knowledge Base)
-├── chroma_db/            # Persistent Vector Database files
-└── chat_history/         # Persistent JSON chat logs
+|-- app.py
+|-- config.py
+|-- requirements.txt
+|-- core/
+|   |-- document_processor.py
+|   |-- memory_manager.py
+|   |-- rag_chain.py
+|   `-- vector_store.py
+|-- data/
+|-- chroma_db/
+`-- chat_history/
 ```
 
----
-
-## 🚀 Getting Started
-### 1. Prerequisites
-Ensure you have Ollama installed and your model downloaded:
-
+## 快速开始
 ```bash
-ollama run deepseek-r1:8b  # or your preferred model
-```
-If you are using a different model, please update the `LLM_MODEL` variable in `config.py`.
-
-### 2. Installation
-Clone the repository and install the required Python packages:
-
-``` bash
-git clone https://github.com/ZaneLi11/3D-Housing-RAG-Copilot
-cd 3D-Housing-RAG-Copilot
+conda create -n research-rag python=3.11 -y
+conda activate research-rag
 pip install -r requirements.txt
 ```
 
-### 3. Running the App
-Launch the Streamlit dashboard:
+拉取 Ollama 模型：
+```bash
+ollama pull deepseek-r1:8b
+ollama pull nomic-embed-text:v1.5
+```
 
+启动项目：
 ```bash
 streamlit run app.py
 ```
 
----
-
-## 🔧 Core Logic Highlights
-### Smart Document Loading
-The system ensures that each PDF is only indexed once by calculating its MD5 hash. If you attempt to upload the same file twice, the system will identify the duplicate and skip the embedding process to save resources.
-
-### Context-Aware Streaming
-By utilizing MessagesPlaceholder and st.write_stream, the assistant provides a fluid, ChatGPT-like experience while maintaining the full context of the ongoing conversation.
-
----
-
-## 🛠️ Upcoming Features (Roadmap)
-
-We are continuously working to improve the 3D-Housing RAG Copilot. Future updates will include:
-
-1. **Advanced Document Management Interface** * A dedicated sidebar section to list all indexed files in the `data/` directory.
-   * Functional "Delete" buttons to remove specific documents and their corresponding vectors from ChromaDB without resetting the entire database.
-
-2. **Source Citation & Traceability** * Implementing metadata extraction to show exactly which page and document the AI's response is derived from.
-   * Adding a "Sources" expander below each assistant response to enhance transparency and technical accuracy.
-
-3. **Multi-Session Support** * Allowing users to create and switch between different chat sessions stored as separate JSON files in the `chat_history/` folder.
-
----
-
-## 📝 License
-Distributed under the MIT License.
+## 备注
+- 若大幅修改提示词或领域后检索效果下降，可清空 `chroma_db/` 后重新索引。
+- 当前会话文件默认路径：`chat_history/research_chat.json`。

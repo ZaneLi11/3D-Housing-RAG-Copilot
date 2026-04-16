@@ -9,7 +9,14 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from langchain_chroma import Chroma
 from langchain_ollama import OllamaEmbeddings
 from core.document_processor import process_single_pdf
-from config import DATA_DIR, CHROMA_DB_DIR, LLM_BASE_URL, EMBEDDING_MODEL, RETRIEVER_K
+from config import (
+    DATA_DIR,
+    CHROMA_DB_DIR,
+    LLM_BASE_URL,
+    EMBEDDING_MODEL,
+    RETRIEVER_K,
+    VECTOR_COLLECTION_NAME,
+)
 
 
 class KnowledgeBaseManager:
@@ -22,7 +29,7 @@ class KnowledgeBaseManager:
         
         # 2. Connect to the Chroma database
         self.vector_store = Chroma(
-            collection_name="3d_housing_collection",
+            collection_name=VECTOR_COLLECTION_NAME,
             embedding_function=self.embeddings,
             persist_directory=CHROMA_DB_DIR
         )
